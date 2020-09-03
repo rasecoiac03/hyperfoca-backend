@@ -8,6 +8,7 @@ data_base = create_engine('sqlite:///exemplo.db')
 app = Flask(__name__)
 api = Api(app)
 
+
 # Endpints de Usuário: GET POST e PUT
 class Users(Resource):
     def get(self):
@@ -16,7 +17,7 @@ class Users(Resource):
         result = [dict(zip(tuple(query.keys()), i)) for i in query.cursor]
         return jsonify(result)
 
-    def post(self)
+    def post(self):
         conn = data_base.connect()
         name = request.json['name']
         email = request.json['email']
@@ -42,7 +43,7 @@ class Users(Resource):
         return jsonify(result)
 
 # Endpints de envio de ID: GET e DELETE
-class  UserById(Resource):
+class UserById(Resource):
     def delete(self, id):
         conn = data_base.connect()
         conn.execute("delete from user where id=%d" % int(id))
@@ -55,7 +56,7 @@ class  UserById(Resource):
         return jsonify(result)
 
 api.add_resource(Users, '/users')
-api.add_resource(Users, '/users/<id>')
+api.add_resource(UserById, '/users/<id>')
 
 if __name__ == '__main__':
     app.run()
