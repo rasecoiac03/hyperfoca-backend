@@ -45,6 +45,9 @@ class Users(Resource):
         email = request.json['email']
         password = request.json['password']
 
+        if get_user_by_email(email):
+            abort(409)
+
         user = conn.execute(
             "insert into user values(null, '{0}', '{1}', '{2}')".format(name, email, password))
 
