@@ -4,7 +4,7 @@ from flask_restful import Resource, Api, abort
 from sqlalchemy import create_engine, Table, Column, Integer, String, MetaData, ForeignKey, Float
 from json import dumps
 import time
-
+import os
 
 data_base = create_engine('sqlite:///exemplo.db')
 app = Flask(__name__)
@@ -152,4 +152,5 @@ api.add_resource(JobVacanciesById, '/jobs/<id>')
 
 if __name__ == '__main__':
     create_db_tables()
-    app.run()
+    port=os.getenv('PORT', default='5000')
+    app.run(host='0.0.0.0', port=port)
