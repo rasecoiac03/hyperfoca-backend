@@ -1,6 +1,6 @@
 # importando as libs
 from flask import Flask, request, jsonify
-from flask_restful import Resource, Api
+from flask_restful import Resource, Api, abort
 from sqlalchemy import create_engine, Table, Column, Integer, String, MetaData, ForeignKey
 from json import dumps
 
@@ -29,7 +29,13 @@ def create_db_tables():
 class Users(Resource):
     def get(self):
         conn = data_base.connect()
-        query = conn.execute("select * from user")
+
+        if 'email' in request.args:
+            email = request.args['email']
+            return jsonify(get_user_by_email(email))
+
+        sql_query = "select * from user"
+        query = conn.execute(sql_query)
         result = [dict(zip(tuple(query.keys()), i)) for i in query.cursor]
         return jsonify(result)
 
@@ -67,10 +73,25 @@ class UserById(Resource):
         return {"status": "success"}
 
     def get(self, id):
-        conn = data_base.connect()
-        query = conn.execute("select * from user where id =%d " % int(id))
-        result = [dict(zip(tuple(query.keys()), i)) for i in query.cursor] 
-        return jsonify(result)
+        user = get_user_by_id(id)
+        if not user:
+            abort(404)
+        return jsonify(user)
+
+
+def get_user_by_id(id):
+    sql_query = f"select * from user where id = {int(id)}"
+    return get_user(sql_query)
+
+def get_user_by_email(email):
+    sql_query = f"select * from user where email = '{email}'"
+    return get_user(sql_query)
+
+def get_user(sql_query):
+    conn = data_base.connect()
+    query = conn.execute(sql_query)
+    result = [dict(zip(tuple(query.keys()), i)) for i in query.cursor] 
+    return result[0] if result else []
 
 api.add_resource(Users, '/users')
 api.add_resource(UserById, '/users/<id>')
