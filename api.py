@@ -34,14 +34,12 @@ class Users(Resource):
         return jsonify(result)
 
     def post(self):
-        print('AAAA')
-        print(request.json)
         conn = data_base.connect()
         name = request.json['name']
         email = request.json['email']
         password = request.json['password']
 
-        conn.execute(
+        user = conn.execute(
             "insert into user values(null, '{0}', '{1}', '{2}')".format(name, email, password))
 
         query = conn.execute('select * from user order by id desc limit 1')
