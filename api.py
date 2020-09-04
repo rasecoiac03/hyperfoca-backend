@@ -1,6 +1,7 @@
 # importando as libs
 from flask import Flask, request, jsonify
 from flask_restful import Resource, Api, abort
+from flask_cors import CORS
 from sqlalchemy import create_engine, Table, Column, Integer, String, MetaData, ForeignKey, Float
 from json import dumps
 import time
@@ -8,6 +9,7 @@ import os
 
 data_base = create_engine('sqlite:///exemplo.db')
 app = Flask(__name__)
+CORS(app)
 api = Api(app)
 
 
